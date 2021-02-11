@@ -1,5 +1,10 @@
 import numpy as np
 import scipy
+from numpy import linalg as LA
+from scipy import linalg as SLA
+import cmath
+import matplotlib
+import matplotlib.pyplot as plt
 
 def convmat(A,P,Q=1,R=1):
     '''
@@ -27,8 +32,6 @@ def convmat(A,P,Q=1,R=1):
 
     # Compute Fourier Coefficients of A
     A = np.fft.fftshift(scipy.fft.fftn(A)) / (Nx*Ny*Nz)
-    # print(A)
-    # print(A.shape)
 
     # Compute Array Indices of Center Harmonic
     p0 = 1 + np.floor(Nx / 2)
@@ -48,9 +51,42 @@ def convmat(A,P,Q=1,R=1):
                             rfft = r[rrow] - r[rcol]
                             C[(row-1).astype(int),(col-1).astype(int)] = \
                                 A[(p0+pfft-1).astype(int),(q0+qfft-1).astype(int),(r0+rfft-1).astype(int)]
-                            # print(A[(p0+pfft-1).astype(int),(q0+qfft-1).astype(int),(r0+rfft-1).astype(int)])
-                            # print(C[(row-1).astype(int),(col-1).astype(int)])
-                            pass
 
     # C = C[...,np.newaxis]
     return C
+
+
+def star(SA, SB):
+    '''
+    STAR Redheffer Star Product
+
+    % INPUT ARGUMENTS
+    % ================
+    % SA First Scattering Matrix
+    % .S11 S11 scattering parameter
+    % .S12 S12 scattering parameter
+    % .S21 S21 scattering parameter
+    % .S22 S22 scattering parameter
+    %
+    % SB Second Scattering Matrix
+    % .S11 S11 scattering parameter
+    % .S12 S12 scattering parameter
+    % .S21 S21 scattering parameter
+    % .S22 S22 scattering parameter
+    %
+    % OUTPUT ARGUMENTS
+    % ================
+    % S Combined Scattering Matrix
+    % .S11 S11 scattering parameter
+    % .S12 S12 scattering parameter
+    % .S21 S21 scattering parameter
+    % .S22 S22 scattering parameter
+    '''
+    N = SA['S11'].shape[0]
+    I = np.eye(N)
+    S11 = SA['S11'] + (SA['S12'] @ LA.inv(I - (SB['S11'] @ SA['S22'])) @ SB['S11'] @ SA['S21'])
+    S12 = SA['S12'] @ LA.inv(I - (SB['S11'] @ SA['S22'])) @ SB['S12']
+    S21 = SB['S21'] @ LA.inv(I - (SA['S22'] @ SB['S11'])) @ SA['S21']
+    S22 = SB['S22'] + (SB['S21'] @ LA.inv(I - (SA['S22'] @ SB['S11'])) @ SA['S22'] @ SB['S12'])
+    S = {'S11': S11, 'S12': S12, 'S21': S21, 'S22': S22}
+    return S
