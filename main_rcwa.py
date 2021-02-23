@@ -40,20 +40,55 @@ n_SiNx = np.sqrt(eps_SiNx)
 # plt.plot(freq,np.imag(n_SiNx))
 # plt.show()
 
-# ================= RCWA Solver
+
+# # ================= RCWA Solver
+# Ly = 0.005 * millimeters  # period along y
+# w_weight = 0.48
+# w = w_weight * Ly
+# R_total, T_total = rcwa_utils.rcwa_solver(freq, eps_gold, eps_SiNx, w=w)
+#
+#
+# # ================= Spectra Plot
+# plt.figure(1)
+# plt.plot(freq, R_total)
+# plt.figure(2)
+# plt.plot(freq, T_total)
+# plt.show()
+#
+# path = './data/fRT_w' + str(w_weight) + '.npz'
+# np.savez(path, freq=freq, R=R_total, T=T_total)
+# print('FILE SAVED')
+
+
+
 Ly = 0.005 * millimeters  # period along y
-w_weight = 0.48
-w = w_weight * Ly
-R_total, T_total = rcwa_utils.rcwa_solver(freq, eps_gold, eps_SiNx, w=w)
 
+N_w = 10
+num_w = 0
+while num_w < N_w:
+    w_weight_list = []
+    w_weight = np.random.uniform(0.3, 0.6)
+    w_weight = np.around(w_weight, 2)
+    if np.any(np.isin(w_weight_list, w_weight)):
+        pass
+    else:  # not in list, available w
+        w_weight_list = np.append(w_weight_list, w_weight)
+        num_w += 1
 
-# ================= Spectra Plot
-plt.figure(1)
-plt.plot(freq, R_total)
-plt.figure(2)
-plt.plot(freq, T_total)
-plt.show()
+    # ================= RCWA Solver
+    w = w_weight * Ly
+    print('[', (num_w), '/', N_w , '] w_weight =', w_weight)
+    R_total, T_total = rcwa_utils.rcwa_solver(freq, eps_gold, eps_SiNx, w=w)
 
-path = './data/fRT_w' + str(w_weight) + '.npz'
-np.savez(path, freq=freq, R=R_total, T=T_total)
-print('FILE SAVED')
+    # ================= Spectra Plot
+    plt.figure(1)
+    plt.plot(freq, R_total)
+    plt.figure(2)
+    plt.plot(freq, T_total)
+    plt.show()
+
+    path = './data/fRT_w' + str(w_weight) + '.npz'
+    np.savez(path, freq=freq, R=R_total, T=T_total)
+    print('\n')
+    print('FILE SAVED, w_weight =', w_weight)
+    print('----------------')

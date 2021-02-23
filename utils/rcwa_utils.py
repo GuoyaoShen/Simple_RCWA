@@ -6,6 +6,9 @@ import cmath
 import matplotlib
 import matplotlib.pyplot as plt
 
+from time import sleep
+import sys
+
 from utils import data_utils
 from utils import calc_utils
 
@@ -26,6 +29,7 @@ def rcwa_solver(freq, eps_gold, eps_SiNx, w=0.52*0.005*millimeters, use_logger=F
     # ================= Calculation Start
     R_total = np.zeros((len(freq),))
     T_total = np.zeros((len(freq),))
+
     for i_freq in range(len(freq)):
         lam0 = c0 / freq[i_freq]
         ginc = np.array([0, 0, 1])
@@ -244,6 +248,13 @@ def rcwa_solver(freq, eps_gold, eps_SiNx, w=0.52*0.005*millimeters, use_logger=F
 
         if use_logger:
             print(i_freq + 1, '||', len(freq))
+
+        # === print a progressbar
+        sys.stdout.write('\r')
+        # the exact output you're looking for:
+        # sys.stdout.write("[%-20s] %d%%" % ('=' * i_freq, (100/len(freq)) * (i_freq+1)))
+        sys.stdout.write("Calculation Progress: %d%%" % ((100 / len(freq)) * (i_freq + 1)))
+        sys.stdout.flush()
 
         # if i_freq==100:
         #     break
