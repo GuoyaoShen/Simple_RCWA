@@ -65,12 +65,12 @@ Ly = 0.005 * millimeters  # period along y
 
 N_w = 10
 num_w = 0
+w_weight_list = []
 while num_w < N_w:
-    w_weight_list = []
     w_weight = np.random.uniform(0.3, 0.6)
     w_weight = np.around(w_weight, 2)
     if np.any(np.isin(w_weight_list, w_weight)):
-        pass
+        continue
     else:  # not in list, available w
         w_weight_list = np.append(w_weight_list, w_weight)
         num_w += 1
