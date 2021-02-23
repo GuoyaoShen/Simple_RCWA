@@ -22,7 +22,7 @@ e0 = 8.85e-12
 u0 = 1.256e-6
 yeta0 = np.sqrt(u0/e0)
 
-def rcwa_solver(freq, eps_gold, eps_SiNx, w=0.52*0.005*millimeters):
+def rcwa_solver(freq, eps_gold, eps_SiNx, w=0.52*0.005*millimeters, use_logger=False):
     # ================= Calculation Start
     R_total = np.zeros((len(freq),))
     T_total = np.zeros((len(freq),))
@@ -242,7 +242,9 @@ def rcwa_solver(freq, eps_gold, eps_SiNx, w=0.52*0.005*millimeters):
         T_ref = np.real(ur1 / ur2 * KZr / kz_inc) * (np.abs(tx) ** 2 + np.abs(ty) ** 2 + np.abs(tz) ** 2)
         T_total[i_freq] = np.sum(np.abs(T_ref))
 
-        print(i_freq + 1, '||', len(freq))
+        if use_logger:
+            print(i_freq + 1, '||', len(freq))
+
         # if i_freq==100:
         #     break
 

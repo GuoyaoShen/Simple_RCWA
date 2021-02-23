@@ -41,7 +41,10 @@ n_SiNx = np.sqrt(eps_SiNx)
 # plt.show()
 
 # ================= RCWA Solver
-R_total, T_total = rcwa_utils.rcwa_solver(freq, eps_gold, eps_SiNx)
+Ly = 0.005 * millimeters  # period along y
+w_weight = 0.48
+w = w_weight * Ly
+R_total, T_total = rcwa_utils.rcwa_solver(freq, eps_gold, eps_SiNx, w=w)
 
 
 # ================= Spectra Plot
@@ -51,7 +54,6 @@ plt.figure(2)
 plt.plot(freq, T_total)
 plt.show()
 
-path = 'fRT.npz'
+path = './data/fRT_w' + str(w_weight) + '.npz'
 np.savez(path, freq=freq, R=R_total, T=T_total)
 print('FILE SAVED')
-pass
